@@ -1,3 +1,4 @@
+import * as bodyParser from 'body-parser'
 import * as express from 'express'
 import * as http from 'http'
 import * as util from 'util'
@@ -10,6 +11,8 @@ const server = http.createServer(app)
 
 // initialise the websocket server instance
 const wss = new WebSocket.Server({ server })
+
+app.use(bodyParser.json({ limit: '100k' }));
 
 app.use('/', (req, res, next) => {
   res.json({ message: 'howdy' })
@@ -31,3 +34,5 @@ wss.on('connection', (ws: WebSocket) => {
 server.listen(process.env.PORT || 8999, () => {
   util.log(`Server started on port ${server.address().port} : )`)
 })
+
+export default server

@@ -1,27 +1,13 @@
-/**
- * Test for server
- */
-import * as chai from 'chai'
-import 'mocha'
-import app from './server'
+import * as request from 'supertest';
 
-const expect = chai.expect;
-
-// tslint:disable-next-line:no-var-requires
-chai.use(require('chai-http'));
+import { app } from './server';
 
 describe('Server', () => {
   describe('/', () => {
-    it('should return message', () => {
-      // tslint:disable-next-line:no-backbone-get-set-outside-model
-      chai.request(app)
-        .get('/')
-        .then((res) => {
-          expect(res).to.have.status(200);
-          expect(res).to.be.json;
-          expect(res.body).to.be.an('object');
-          expect(res.body.message).to.equal('howdy');
-        });
+    it('should return message', async () => {
+      const response = await request(app).get('/');
+      expect(response.status).toEqual(200);
+      expect(response.body.message).toEqual('howdy');
     });
-  })
+  });
 });

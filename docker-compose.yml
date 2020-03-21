@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  node-sandbox:
+    build:
+      context: .
+    container_name: node-sandbox
+    image: node-sandbox
+    restart: unless-stopped
+    volumes:
+      - ./logs:/logs
+    networks:
+      - node-sandbox-network
+    ports:
+      - '3000:3000'
+
+networks:
+  node-sandbox-network:
+    driver: bridge

@@ -1,19 +1,8 @@
 {
-    "defaultSeverity": "error",
-    "extends": [
-        "tslint:recommended",
-        "tslint-no-unused-expression-chai"
-    ],
-    "jsRules": {},
-    "rules": {
-        "semicolon": [
-            false,
-            "never"
-        ],
-        "quotemark": [
-            true,
-            "single"
-        ]
-    },
-    "rulesDirectory": []
+  "extends": "gts/tslint.json",
+  "linterOptions": {
+    "exclude": [
+      "**/*.json"
+    ]
+  }
 }

@@ -1,38 +1,60 @@
-import * as bodyParser from 'body-parser'
-import * as express from 'express'
-import * as http from 'http'
-import * as util from 'util'
-import * as WebSocket from 'ws'
+import * as WebSocket from 'ws';
+import * as compression from 'compression';
+import * as cors from 'cors';
+import * as express from 'express';
+import * as http from 'http';
 
-const app = express()
+import { json, urlencoded } from 'body-parser';
+
+import { ApplicationError } from './errors';
+import { logger } from './logger';
+import { router } from './routes';
+
+const app = express();
 
 // Initialise a simple HTTP server
-const server = http.createServer(app)
+const server = http.createServer(app);
 
 // initialise the websocket server instance
-const wss = new WebSocket.Server({ server })
+const wss = new WebSocket.Server({ server });
 
-app.use(bodyParser.json({ limit: '100k' }));
+app.use(json({ limit: '100k' }));
+app.use(urlencoded({ extended: true }));
+app.use(cors());
+app.use(compression());
 
-app.use('/', (req, res, next) => {
-  res.json({ message: 'howdy' })
-})
+app.set('port', process.env.PORT || 3000);
+
+app.use(router);
+
+app.use(
+  (
+    err: ApplicationError,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    return res.status(err.status || 500).json({
+      error: process.env.NODE_ENV === 'development' ? err : undefined,
+      message: err.message,
+    });
+  }
+);
 
 wss.on('connection', (ws: WebSocket) => {
   // connection is up, let's add a simple event
   ws.on('message', (message: string) => {
     // log the received message and send it back to the client
-    util.log(`Received: ${message}`)
-    ws.send(`Hello, you sent -> ${message}`)
-  })
+    logger.info({ label: 'web-socket', message: `Received: ${message}` });
+    ws.send(`Hello, you sent -> ${message}`);
+  });
 
   // send immediately a feedback to the incoming connection
-  ws.send('Hi there, I am a WebSocket server')
-})
+  ws.send('Hi there, I am a WebSocket server');
+});
 
-// start our server
-server.listen(process.env.PORT || 8999, () => {
-  util.log(`Server started on port ${server.address().port} : )`)
-})
-
-export default server
+export { app, server };

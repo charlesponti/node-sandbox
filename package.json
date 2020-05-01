@@ -7,7 +7,8 @@
     "express": "^4.17.1",
     "moment": "^2.24.0",
     "winston": "^3.2.1",
-    "ws": "^7.2.3"
+    "ws": "^7.2.3",
+    "snyk": "^1.316.1"
   },
   "description": "",
   "devDependencies": {
@@ -42,11 +43,13 @@
     "fix": "gts fix",
     "lint": "tslint --project ./tslint.json -t verbose",
     "posttest": "npm run check",
-    "prepare": "npm run compile",
+    "prepare": "npm run snyk-protect && npm run compile",
     "prepublish": "npm run compile",
     "pretest": "npm run compile",
     "start": "npm run dev",
-    "test": "NODE_ENV=test jest"
+    "test": "NODE_ENV=test jest",
+    "snyk-protect": "snyk protect"
   },
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "snyk": true
 }
